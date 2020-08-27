@@ -50,49 +50,55 @@ class LinkedList
   end
 
   def pop
-    last_index = Node.count - 1
-    new_tail = Node.count - 2
-    Node.counter.each_with_index do |node, idx|
-      @tail = node if idx == new_tail
-      node.next_node = nil if idx == new_tail
-      node.delete if idx == last_index
+    @nodes.each_with_index do |node, idx|
+      @tail = node if idx == Node.count - 2
+      node.next_node = nil if idx == Node.count - 2
+      node.delete if idx == Node.count - 1
     end
   end
 
   def contains?(value)
-    Node.counter.each do |node|
+    @nodes.each do |node|
       return true if node.value == value
       return nil if node.value != value
     end
   end
 
   def find(value)
-    Node.counter.each_with_index do |node, idx|
+    @nodes.each_with_index do |node, idx|
       return idx if node.value == value
       return nil if node.value != value
     end
   end
 
   def to_s
-    Node.counter.each do |node|
+    @nodes.each do |node|
       print "( #{node.value} ) -> "
     end
     print ' nil '
   end
-end
 
-test = LinkedList.new
-test.append(9)
-test.append(10)
-test.append(11)
-test.append(12)
-# puts test.head
-# puts test.tail
-# puts test.at(2)
-# puts test.size
-# test.pop
-# puts test.tail
-# puts test.size
-# puts test.contains?(11)
-# puts test.find(12)
-test.to_s
+  def insert_at(value, index)
+    append(value) if index.positive? && Node.count < 2
+    insert_node(value, index)
+  end
+
+  def insert_node(value, index)
+    @nodes.each_with_index do |node, idx|
+      node.value = value if index == idx
+    end
+  end
+
+  def remove_at(index)
+    @nodes.each_with_index do |node, idx|
+      update_head_and_tail_to_remove(node, index, idx)
+      node.next_node = node.next_node.next_node if idx == index - 1
+      node.delete if index == idx
+    end
+  end
+
+  def update_head_and_tail_to_remove(node, index, idx)
+    @head.value = @head.next_node.value if index.zero?
+    @tail.value = node.value if index == Node.count - 1 && idx == Node.count - 2
+  end
+end
